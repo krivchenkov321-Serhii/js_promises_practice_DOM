@@ -1,25 +1,30 @@
 'use strict';
 
 const firstPromise = new Promise((resolve, reject) => {
-  const timer = setTimeout(() => {
+  let timer = setTimeout(() => {
     reject(new Error('First promise was rejected'));
   }, 3000);
 
-  document.addEventListener(
-    'click',
-    () => {
-      clearTimeout(timer);
-      resolve();
-    },
-    { once: true },
-  );
+  document.addEventListener('click', (e) => {
+    clearTimeout(timer);
+
+    if (e.button === 0) {
+      resolve('First promise was resolved');
+
+      return;
+    }
+
+    timer = setTimeout(() => {
+      reject(new Error('First promise was rejected'));
+    }, 3000);
+  });
 });
 
 const secondPromise = new Promise((resolve, reject) => {
   document.addEventListener(
     'click',
     () => {
-      resolve();
+      resolve('Second promise was resolved');
     },
     { once: true },
   );
@@ -28,7 +33,7 @@ const secondPromise = new Promise((resolve, reject) => {
     'contextmenu',
     (e) => {
       e.preventDefault();
-      resolve();
+      resolve('Second promise was resolved');
     },
     { once: true },
   );
@@ -42,7 +47,7 @@ const thirdPromise = new Promise((resolve, reject) => {
     leftClicked = true;
 
     if (leftClicked && rightClicked) {
-      resolve();
+      resolve('Third promise was resolved');
     }
   });
 
@@ -51,67 +56,67 @@ const thirdPromise = new Promise((resolve, reject) => {
     rightClicked = true;
 
     if (leftClicked && rightClicked) {
-      resolve();
+      resolve('Third promise was resolved');
     }
   });
 });
 
 firstPromise
-  .then(() => {
+  .then((message) => {
     const success = document.createElement('div');
 
     success.classList.add('success');
     success.dataset.qa = 'notification';
-    success.textContent = 'First promise was resolved';
+    success.textContent = message;
 
     document.body.append(success);
   })
-  .catch(() => {
-    const error = document.createElement('div');
+  .catch((error) => {
+    const errorMessage = document.createElement('div');
 
-    error.classList.add('error');
-    error.dataset.qa = 'notification';
-    error.textContent = 'First promise was rejected';
+    errorMessage.classList.add('error');
+    errorMessage.dataset.qa = 'notification';
+    errorMessage.textContent = error.message;
 
-    document.body.append(error);
+    document.body.append(errorMessage);
   });
 
 secondPromise
-  .then(() => {
+  .then((message) => {
     const success = document.createElement('div');
 
     success.classList.add('success');
     success.dataset.qa = 'notification';
-    success.textContent = 'Second promise was resolved';
+    success.textContent = message;
 
     document.body.append(success);
   })
-  .catch(() => {
+  .catch((message) => {
     const error = document.createElement('div');
 
     error.classList.add('error');
     error.dataset.qa = 'notification';
-    error.textContent = 'Second promise was rejected';
+    error.textContent = message;
 
     document.body.append(error);
   });
 
 thirdPromise
-  .then(() => {
+  .then((message) => {
     const success = document.createElement('div');
 
     success.classList.add('success');
     success.dataset.qa = 'notification';
-    success.textContent = 'Third promise was resolved';
+    success.textContent = message;
 
     document.body.append(success);
   })
-  .catch(() => {
+  .catch((message) => {
     const error = document.createElement('div');
 
     error.classList.add('error');
     error.dataset.qa = 'notification';
-    error.textContent = 'Third promise was rejected';
+    error.textContent = message;
 
     document.body.append(error);
   });
